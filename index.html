@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" href="style.css" />
+        <title>Drawer</title>
+    </head>
+    <body>
+        <main>
+            <button
+                type="button"
+                class="btn btn-primary"
+                data-toggle="drawer"
+                data-target="#drawer"
+            >
+                Open Drawer
+            </button>
+        </main>
+
+        <div class="drawer" id="drawer">
+            <div class="drawer-dialog">
+                <button
+                    type="button"
+                    class="drawer-toggle"
+                    data-dismiss="drawer"
+                ></button>
+                <div class="drawer-body">
+                    <h1 class="title">Hello World</h1>
+                    <p class="description">
+                        Lorem ipsum dolor sit amet, consectetur adipisicing
+                        elit. Fugiat nulla dolor cumque sint officiis magni quod
+                        nesciunt? Ducimus culpa delectus incidunt animi?
+                        Possimus, unde laudantium numquam qui dolorum
+                        reprehenderit perferendis.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            (function () {
+                document
+                    .querySelectorAll('[data-toggle="drawer"]')
+                    .forEach(function (btn) {
+                        btn.addEventListener("click", function (e) {
+                            e.preventDefault();
+                            const target = btn.dataset.target;
+                            document
+                                .querySelector(target)
+                                .classList.add("active");
+                        });
+                    });
+
+                document.addEventListener("click", function (e) {
+                    if (e.target.classList.contains("drawer")) {
+                        e.target.classList.remove("active", "no-transition");
+                    }
+                });
+
+                document
+                    .querySelectorAll('[data-dismiss="drawer"]')
+                    .forEach(function (btn) {
+                        const drawer = btn.closest(".drawer");
+                        const drawerDialog =
+                            drawer.querySelector(".drawer-dialog");
+                        let isDragging = false;
+                        let startY = 0;
+                        let moveY = 0;
+                        btn.addEventListener("touchstart", drawerStart);
+                        btn.addEventListener("mousedown", drawerStart);
+                        drawer.addEventListener("mousemove", drawerMove);
+                        drawer.addEventListener("touchmove", drawerMove);
+                        drawer.addEventListener("mouseup", drawerEnd);
+                        drawer.addEventListener("touchend", drawerEnd);
+
+                        function drawerStart(e) {
+                            if (e.touches) {
+                                e = e.touches[0];
+                            }
+                            isDragging = true;
+                            startY = e.clientY;
+                        }
+                        function drawerMove(e) {
+                            if (e.touches) {
+                                e = e.touches[0];
+                            }
+                            if (isDragging) {
+                                moveY = e.clientY - startY;
+                                if (moveY < 0) {
+                                    moveY = 0;
+                                }
+                                drawer.classList.add("no-transition");
+                                drawerDialog.style.transform = `translateY(${moveY}px)`;
+                            }
+                        }
+                        function drawerEnd() {
+                            isDragging = false;
+                            startY = 0;
+                            const height = drawerDialog.clientHeight;
+                            if (height - moveY < height / 2) {
+                                drawer.classList.remove("active");
+                            }
+                            drawerDialog.style.transform = null;
+                            drawer.classList.remove("no-transition");
+                        }
+                    });
+            })();
+        </script>
+    </body>
+</html>
